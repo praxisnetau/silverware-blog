@@ -1,0 +1,48 @@
+/* SilverWare Blog Styles
+===================================================================================================================== */
+
+.blogpost {
+  
+  .tags {
+    
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    
+    .with {
+      color: #888;
+      display: block;
+      margin-bottom: 2px;
+    }
+    
+    ul {
+      
+      padding: 0;
+      font-size: 0;
+      list-style: none;
+      
+      li {
+        
+        margin-left: 2px;
+        margin-right: 5px;
+        
+        font-size: 1rem;
+        display: inline-block;
+        
+        &:before {
+          color: #ccc;
+          content: "\f02b";
+          font-family: 'FontAwesome';
+        }
+        
+        a {
+          margin-left: 3px;
+          display: inline-block;
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+}
