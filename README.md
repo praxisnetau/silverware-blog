@@ -1,5 +1,9 @@
 # SilverWare Blog Module
 
+[![Latest Stable Version](https://poser.pugx.org/silverware/blog/v/stable)](https://packagist.org/packages/silverware/blog)
+[![Latest Unstable Version](https://poser.pugx.org/silverware/blog/v/unstable)](https://packagist.org/packages/silverware/blog)
+[![License](https://poser.pugx.org/silverware/blog/license)](https://packagist.org/packages/silverware/blog)
+
 Provides a blog for [SilverWare][silverware] apps, divided into a series of categories and posts.
 
 ## Contents
