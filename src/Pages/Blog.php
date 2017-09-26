@@ -108,7 +108,11 @@ class Blog extends Page implements ListSource, TagSource
      */
     private static $defaults = [
         'FeedEnabled' => 1,
-        'FeedNumberOfPosts' => 10
+        'FeedNumberOfPosts' => 10,
+        'ListConfig' => [
+            'PaginateItems' => 1,
+            'ItemsPerPage' => 10
+        ]
     ];
     
     /**
@@ -233,21 +237,17 @@ class Blog extends Page implements ListSource, TagSource
     /**
      * Answers a list of posts within the blog.
      *
-     * @return SS_List
+     * @return DataList
      */
     public function getPosts()
     {
-        if ($ids = $this->Children()->column('ID')) {
-            return BlogPost::get()->filter('ParentID', $ids);
-        }
-        
-        return ArrayList::create();
+        return BlogPost::get()->filter('ParentID', $this->AllChildren()->column('ID') ?: null);
     }
     
     /**
      * Answers a list of posts within the blog for the RSS feed.
      *
-     * @return SS_List
+     * @return DataList
      */
     public function getFeedPosts()
     {
@@ -257,7 +257,7 @@ class Blog extends Page implements ListSource, TagSource
     /**
      * Answers a list of posts within the receiver.
      *
-     * @return SS_List
+     * @return DataList
      */
     public function getListItems()
     {

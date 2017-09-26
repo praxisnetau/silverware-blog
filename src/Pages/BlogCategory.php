@@ -86,6 +86,16 @@ class BlogCategory extends Page implements ListSource, TagSource
     private static $can_be_root = false;
     
     /**
+     * Defines the default values for the fields of this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $defaults = [
+        'HideFromMainMenu' => 1
+    ];
+    
+    /**
      * Defines the allowed children for this object.
      *
      * @var array|string
@@ -105,48 +115,6 @@ class BlogCategory extends Page implements ListSource, TagSource
         ListViewExtension::class,
         ImageDefaultsExtension::class
     ];
-    
-    /**
-     * Answers a list of field objects for the CMS interface.
-     *
-     * @return FieldList
-     */
-    public function getCMSFields()
-    {
-        // Obtain Field Objects (from parent):
-        
-        $fields = parent::getCMSFields();
-        
-        // Create Field Objects:
-        
-        
-        
-        // Answer Field Objects:
-        
-        return $fields;
-    }
-    
-    /**
-     * Answers the labels for the fields of the receiver.
-     *
-     * @param boolean $includerelations Include labels for relations.
-     *
-     * @return array
-     */
-    public function fieldLabels($includerelations = true)
-    {
-        // Obtain Field Labels (from parent):
-        
-        $labels = parent::fieldLabels($includerelations);
-        
-        // Define Field Labels:
-        
-        
-        
-        // Answer Field Labels:
-        
-        return $labels;
-    }
     
     /**
      * Answers a list of posts within the blog category.

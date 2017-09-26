@@ -18,7 +18,6 @@
 namespace SilverWare\Blog\Pages;
 
 use SilverStripe\Forms\DatetimeField;
-use SilverStripe\ORM\DataObjectInterface;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Forms\TagField;
 use Page;
@@ -165,7 +164,7 @@ class BlogPost extends Page
                 ),
                 TagField::create(
                     'Tags',
-                    _t(__CLASS__ . '.TAGS', 'Tags'),
+                    $this->fieldLabel('Tags'),
                     BlogTag::get()
                 )
             ],
@@ -193,6 +192,7 @@ class BlogPost extends Page
         // Define Field Labels:
         
         $labels['Date'] = _t(__CLASS__ . '.DATE', 'Date');
+        $labels['Tags'] = _t(__CLASS__ . '.TAGS', 'Tags');
         $labels['Title'] = _t(__CLASS__ . '.POSTTITLE', 'Post title');
         
         // Answer Field Labels:
