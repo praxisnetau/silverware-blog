@@ -77,7 +77,7 @@ class Blog extends Page implements ListSource, TagSource
      * @var string
      * @config
      */
-    private static $icon = 'silverware-blog/admin/client/dist/images/icons/Blog.png';
+    private static $icon = 'silverware/blog: admin/client/dist/images/icons/Blog.png';
     
     /**
      * Defines the default child class for this object.
@@ -108,11 +108,18 @@ class Blog extends Page implements ListSource, TagSource
      */
     private static $defaults = [
         'FeedEnabled' => 1,
-        'FeedNumberOfPosts' => 10,
-        'ListConfig' => [
-            'PaginateItems' => 1,
-            'ItemsPerPage' => 10
-        ]
+        'FeedNumberOfPosts' => 10
+    ];
+    
+    /**
+     * Defines the default values for the list view component.
+     *
+     * @var array
+     * @config
+     */
+    private static $list_view_defaults = [
+        'PaginateItems' => 1,
+        'ItemsPerPage' => 10
     ];
     
     /**

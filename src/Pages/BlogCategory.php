@@ -67,7 +67,7 @@ class BlogCategory extends Page implements ListSource, TagSource
      * @var string
      * @config
      */
-    private static $icon = 'silverware-blog/admin/client/dist/images/icons/BlogCategory.png';
+    private static $icon = 'silverware/blog: admin/client/dist/images/icons/BlogCategory.png';
     
     /**
      * Defines the default child class for this object.
@@ -92,6 +92,7 @@ class BlogCategory extends Page implements ListSource, TagSource
      * @config
      */
     private static $defaults = [
+        'ListInherit' => 1,
         'HideFromMainMenu' => 1
     ];
     

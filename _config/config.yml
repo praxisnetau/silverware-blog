@@ -6,6 +6,6 @@ Name: silverware-blog
 
 SilverStripe\CMS\Controllers\ContentController:
   required_js:
-    - silverware-blog/client/dist/js/bundle.js
+    - "silverware/blog: client/dist/js/bundle.js"
   required_css:
-    - silverware-blog/client/dist/styles/bundle.css
+    - "silverware/blog: client/dist/styles/bundle.css"

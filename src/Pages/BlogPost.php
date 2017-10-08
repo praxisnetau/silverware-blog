@@ -19,6 +19,7 @@ namespace SilverWare\Blog\Pages;
 
 use SilverStripe\Forms\DatetimeField;
 use SilverWare\Blog\Model\BlogTag;
+use SilverWare\Extensions\Model\DetailFieldsExtension;
 use SilverWare\Forms\TagField;
 use Page;
 
@@ -63,7 +64,7 @@ class BlogPost extends Page
      * @var string
      * @config
      */
-    private static $icon = 'silverware-blog/admin/client/dist/images/icons/BlogPost.png';
+    private static $icon = 'silverware/blog: admin/client/dist/images/icons/BlogPost.png';
     
     /**
      * Defines the default sort field and order for this object.
@@ -130,6 +131,32 @@ class BlogPost extends Page
     private static $allowed_children = 'none';
     
     /**
+     * Defines the extension classes to apply to this object.
+     *
+     * @var array
+     * @config
+     */
+    private static $extensions = [
+        DetailFieldsExtension::class
+    ];
+    
+    /**
+     * Defines the format for the meta date field.
+     *
+     * @var string
+     * @config
+     */
+    private static $meta_date_format = 'd MMMM Y h:mma';
+    
+    /**
+     * Defines the asset folder for uploaded meta images.
+     *
+     * @var string
+     * @config
+     */
+    private static $meta_image_folder = 'Blog';
+    
+    /**
      * Defines the list item details to show for this object.
      *
      * @var array
@@ -141,6 +168,49 @@ class BlogPost extends Page
             'text' => '$CategoryLink'
         ]
     ];
+    
+    /**
+     * Defines the detail fields to show for the object.
+     *
+     * @var array
+     * @config
+     */
+    private static $detail_fields = [
+        'date' => [
+            'name' => 'Date',
+            'icon' => 'calendar',
+            'text' => '$MetaDateFormatted'
+        ],
+        'category' => [
+            'name' => 'Category',
+            'icon' => 'folder-o',
+            'text' => '$CategoryLink'
+        ]
+    ];
+    
+    /**
+     * Defines the setting for showing the detail fields inline.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $detail_fields_inline = true;
+    
+    /**
+     * Defines the setting for hiding the detail fields header.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $detail_fields_hide_header = true;
+    
+    /**
+     * Defines the setting for hiding the detail field names.
+     *
+     * @var boolean
+     * @config
+     */
+    private static $detail_fields_hide_names = true;
     
     /**
      * Answers a list of field objects for the CMS interface.
