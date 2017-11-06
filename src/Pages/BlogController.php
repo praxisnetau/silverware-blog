@@ -40,7 +40,8 @@ class BlogController extends PageController
      * @config
      */
     private static $url_handlers = [
-        'tag/$tag!' => 'tag'
+        'tag/$Tag!' => 'tag',
+        '$Post' => 'index'
     ];
     
     /**
@@ -53,6 +54,26 @@ class BlogController extends PageController
         'rss',
         'tag'
     ];
+    
+    /**
+     * Default action for this controller, either render the blog or redirect to an existing post.
+     *
+     * @param HTTPRequest $request
+     *
+     * @return DBHTMLText|HTTPResponse
+     */
+    public function index(HTTPRequest $request)
+    {
+        if ($segment = $request->param('Post')) {
+            
+            if ($post = BlogPost::get()->find('URLSegment', $segment)) {
+                return $this->redirect($post->Link());
+            }
+            
+        }
+        
+        return $this->render();
+    }
     
     /**
      * Renders a list of the latest blog posts as an RSS feed.
@@ -94,7 +115,7 @@ class BlogController extends PageController
     {
         // Obtain Tag Segment:
         
-        if ($segment = $request->param('tag')) {
+        if ($segment = $request->param('Tag')) {
             
             // Obtain Tag Object:
             
