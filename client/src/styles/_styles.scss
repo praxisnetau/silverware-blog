@@ -3,40 +3,44 @@
 
 .blogpost {
   
-  .tags {
+  article {
     
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-    
-    .with {
-      color: #888;
-      display: block;
-      margin-bottom: 2px;
-    }
-    
-    ul {
+    .tags {
       
-      padding: 0;
-      font-size: 0;
-      list-style: none;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
       
-      li {
+      .with {
+        color: #888;
+        display: block;
+        margin-bottom: 2px;
+      }
+      
+      ul {
         
-        margin-left: 2px;
-        margin-right: 5px;
+        padding: 0;
+        font-size: 0;
+        list-style: none;
         
-        font-size: 1rem;
-        display: inline-block;
-        
-        &:before {
-          color: #ccc;
-          content: "\f02b";
-          font-family: 'FontAwesome';
-        }
-        
-        a {
-          margin-left: 3px;
+        li {
+          
+          margin-left: 2px;
+          margin-right: 5px;
+          
+          font-size: 1rem;
           display: inline-block;
+          
+          &:before {
+            color: #ccc;
+            content: "\f02b";
+            font-family: 'FontAwesome';
+          }
+          
+          a {
+            margin-left: 3px;
+            display: inline-block;
+          }
+          
         }
         
       }
