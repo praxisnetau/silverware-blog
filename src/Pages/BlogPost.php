@@ -119,6 +119,7 @@ class BlogPost extends Page
      * @config
      */
     private static $casting = [
+        'TagsHTML' => 'HTMLFragment',
         'CategoryLink' => 'HTMLFragment'
     ];
     
@@ -165,7 +166,13 @@ class BlogPost extends Page
     private static $list_item_details = [
         'category' => [
             'icon' => 'folder-o',
-            'text' => '$CategoryLink'
+            'text' => '$CategoryLink',
+            'show' => 'ShowCategoryInList'
+        ],
+        'tags' => [
+            'icon' => 'tag',
+            'text' => '$TagsHTML',
+            'show' => 'ShowTagsInList'
         ]
     ];
     
@@ -318,6 +325,42 @@ class BlogPost extends Page
             $this->getCategory()->Link(),
             $this->getCategory()->Title
         );
+    }
+    
+    /**
+     * Answers a string of HTML containing the tags for the blog post.
+     *
+     * @return string
+     */
+    public function getTagsHTML()
+    {
+        $output = [];
+        
+        foreach ($this->Tags() as $tag) {
+            $output[] = sprintf('<a class="tag" href="%s">%s</a>', $tag->Link, $tag->Title);
+        }
+        
+        return implode(', ', $output);
+    }
+    
+    /**
+     * Answers true if the category is to be shown in the list.
+     *
+     * @return boolean
+     */
+    public function getShowCategoryInList()
+    {
+        return (boolean) $this->getBlog()->ShowCategoryInList;
+    }
+    
+    /**
+     * Answers true if the tags are to be shown in the list.
+     *
+     * @return boolean
+     */
+    public function getShowTagsInList()
+    {
+        return (boolean) $this->getBlog()->ShowTagsInList;
     }
     
     /**

@@ -94,6 +94,8 @@ class Blog extends Page implements ListSource, TagSource
      * @config
      */
     private static $db = [
+        'ShowCategoryInList' => 'Boolean',
+        'ShowTagsInList' => 'Boolean',
         'FeedTitle' => 'Varchar(255)',
         'FeedDescription' => 'Varchar(255)',
         'FeedNumberOfPosts' => 'Int',
@@ -107,6 +109,8 @@ class Blog extends Page implements ListSource, TagSource
      * @config
      */
     private static $defaults = [
+        'ShowCategoryInList' => 1,
+        'ShowTagsInList' => 0,
         'FeedEnabled' => 1,
         'FeedNumberOfPosts' => 10
     ];
@@ -160,6 +164,20 @@ class Blog extends Page implements ListSource, TagSource
             'Root.Options',
             [
                 FieldSection::create(
+                    'PostOptions',
+                    $this->fieldLabel('PostOptions'),
+                    [
+                        CheckboxField::create(
+                            'ShowCategoryInList',
+                            $this->fieldLabel('ShowCategoryInList')
+                        ),
+                        CheckboxField::create(
+                            'ShowTagsInList',
+                            $this->fieldLabel('ShowTagsInList')
+                        )
+                    ]
+                ),
+                FieldSection::create(
                     'FeedOptions',
                     $this->fieldLabel('FeedOptions'),
                     [
@@ -208,9 +226,12 @@ class Blog extends Page implements ListSource, TagSource
         
         $labels['FeedTitle'] = _t(__CLASS__ . '.FEEDTITLE', 'Title');
         $labels['FeedOptions'] = _t(__CLASS__ . '.FEED', 'Feed');
+        $labels['PostOptions'] = _t(__CLASS__ . '.POSTS', 'Posts');
         $labels['FeedEnabled'] = _t(__CLASS__ . '.FEEDENABLED', 'Feed enabled');
         $labels['FeedDescription'] = _t(__CLASS__ . '.DESCRIPTION', 'Description');
         $labels['FeedNumberOfPosts'] = _t(__CLASS__ . '.NUMBEROFPOSTS', 'Number of posts');
+        $labels['ShowCategoryInList'] = _t(__CLASS__ . '.SHOWCATEGORYINLIST', 'Show category in list');
+        $labels['ShowTagsInList'] = _t(__CLASS__ . '.SHOWTAGSINLIST', 'Show tags in list');
         
         // Answer Field Labels:
         

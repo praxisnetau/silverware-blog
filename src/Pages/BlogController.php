@@ -143,6 +143,16 @@ class BlogController extends PageController
     }
     
     /**
+     * Answers the associated blog record.
+     *
+     * @return Blog
+     */
+    public function getBlog()
+    {
+        return $this->data();
+    }
+    
+    /**
      * Performs initialisation before any action is called on the receiver.
      *
      * @return void
