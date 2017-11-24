@@ -17,10 +17,12 @@
 
 namespace SilverWare\Blog\Pages;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Extensions\Lists\ListViewExtension;
 use SilverWare\Extensions\Model\ImageDefaultsExtension;
@@ -95,7 +97,9 @@ class Blog extends Page implements ListSource, TagSource
      */
     private static $db = [
         'ShowCategoryInList' => 'Boolean',
+        'ShowAuthorsInList' => 'Boolean',
         'ShowTagsInList' => 'Boolean',
+        'HideAuthors' => 'Boolean',
         'FeedTitle' => 'Varchar(255)',
         'FeedDescription' => 'Varchar(255)',
         'FeedNumberOfPosts' => 'Int',
@@ -110,7 +114,9 @@ class Blog extends Page implements ListSource, TagSource
      */
     private static $defaults = [
         'ShowCategoryInList' => 1,
+        'ShowAuthorsInList' => 0,
         'ShowTagsInList' => 0,
+        'HideAuthors' => 0,
         'FeedEnabled' => 1,
         'FeedNumberOfPosts' => 10
     ];
@@ -172,8 +178,16 @@ class Blog extends Page implements ListSource, TagSource
                             $this->fieldLabel('ShowCategoryInList')
                         ),
                         CheckboxField::create(
+                            'ShowAuthorsInList',
+                            $this->fieldLabel('ShowAuthorsInList')
+                        ),
+                        CheckboxField::create(
                             'ShowTagsInList',
                             $this->fieldLabel('ShowTagsInList')
+                        ),
+                        CheckboxField::create(
+                            'HideAuthors',
+                            $this->fieldLabel('HideAuthors')
                         )
                     ]
                 ),
@@ -231,7 +245,9 @@ class Blog extends Page implements ListSource, TagSource
         $labels['FeedDescription'] = _t(__CLASS__ . '.DESCRIPTION', 'Description');
         $labels['FeedNumberOfPosts'] = _t(__CLASS__ . '.NUMBEROFPOSTS', 'Number of posts');
         $labels['ShowCategoryInList'] = _t(__CLASS__ . '.SHOWCATEGORYINLIST', 'Show category in list');
+        $labels['ShowAuthorsInList'] = _t(__CLASS__ . '.SHOWAUTHORSINLIST', 'Show authors in list');
         $labels['ShowTagsInList'] = _t(__CLASS__ . '.SHOWTAGSINLIST', 'Show tags in list');
+        $labels['HideAuthors'] = _t(__CLASS__ . '.HIDEAUTHORS', 'Hide authors');
         
         // Answer Field Labels:
         
@@ -300,5 +316,18 @@ class Blog extends Page implements ListSource, TagSource
     public function getTags()
     {
         return BlogTag::forSource($this, $this->getPosts());
+    }
+    
+    /**
+     * Answers a link for the given author.
+     *
+     * @param Member $member
+     * @param string $author
+     *
+     * @return string
+     */
+    public function getAuthorLink(Member $member, $action = null)
+    {
+        return $this->Link(Controller::join_links('author', $member->URLSegment, $action));
     }
 }

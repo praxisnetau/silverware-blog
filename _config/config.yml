@@ -9,3 +9,10 @@ SilverStripe\CMS\Controllers\ContentController:
     - "silverware/blog: client/dist/js/bundle.js"
   required_css:
     - "silverware/blog: client/dist/styles/bundle.css"
+
+# Configure Member Extensions:
+
+SilverStripe\Security\Member:
+  extensions:
+    - SilverWare\Blog\Extensions\MemberExtension
+    - SilverWare\Extensions\Model\URLSegmentExtension

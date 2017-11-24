@@ -19,6 +19,7 @@ namespace SilverWare\Blog\Pages;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\RSS\RSSFeed;
+use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use PageController;
 
@@ -40,6 +41,7 @@ class BlogController extends PageController
      * @config
      */
     private static $url_handlers = [
+        'author/$Author!' => 'author',
         'tag/$Tag!' => 'tag',
         '$Post' => 'index'
     ];
@@ -52,7 +54,8 @@ class BlogController extends PageController
      */
     private static $allowed_actions = [
         'rss',
-        'tag'
+        'tag',
+        'author'
     ];
     
     /**
@@ -105,6 +108,44 @@ class BlogController extends PageController
     }
     
     /**
+     * Renders a list of the blog posts matching the requested author.
+     *
+     * @param HTTPRequest $request
+     *
+     * @return DBHTMLText
+     */
+    public function author(HTTPRequest $request)
+    {
+        // Obtain Author Segment:
+        
+        if ($segment = $request->param('Author')) {
+            
+            // Obtain Tag Object:
+            
+            if ($author = Member::get()->find('URLSegment', $segment)) {
+                
+                // Filter Posts by Author Post IDs:
+                
+                $this->data()->addListFilter(['ID' => $author->BlogPosts()->column('ID')]);
+                
+                // Add Filter Alert to List:
+                
+                $this->data()->addListAlert(
+                    sprintf(_t(__CLASS__ . '.SHOWINGPOSTSBYAUTHOR', 'Showing posts by author "%s"'), $author->Name)
+                );
+                
+                return [];
+                
+            }
+            
+        }
+        
+        // Answer 404 Not Found:
+        
+        return $this->httpError(404);
+    }
+    
+    /**
      * Renders a list of the blog posts matching the requested tag.
      *
      * @param HTTPRequest $request
@@ -128,7 +169,7 @@ class BlogController extends PageController
                 // Add Filter Alert to List:
                 
                 $this->data()->addListAlert(
-                    sprintf(_t(__CLASS__ . '.SHOWINGPOSTSALERT', 'Showing posts tagged with "%s"'), $tag->Title)
+                    sprintf(_t(__CLASS__ . '.SHOWINGPOSTSTAGGEDWITH', 'Showing posts tagged with "%s"'), $tag->Title)
                 );
                 
                 return [];
