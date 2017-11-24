@@ -18,6 +18,7 @@
 namespace SilverWare\Blog\Pages;
 
 use SilverStripe\ORM\DataList;
+use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Extensions\Lists\ListViewExtension;
 use SilverWare\Extensions\Model\ImageDefaultsExtension;
@@ -118,6 +119,16 @@ class BlogCategory extends Page implements ListSource, TagSource
     ];
     
     /**
+     * Answers the parent blog of the receiver.
+     *
+     * @return Blog
+     */
+    public function getBlog()
+    {
+        return $this->getParent();
+    }
+    
+    /**
      * Answers a list of posts within the blog category.
      *
      * @return DataList
@@ -145,5 +156,18 @@ class BlogCategory extends Page implements ListSource, TagSource
     public function getTags()
     {
         return BlogTag::forSource($this, $this->getPosts());
+    }
+    
+    /**
+     * Answers a link for the given author.
+     *
+     * @param Member $member
+     * @param string $author
+     *
+     * @return string
+     */
+    public function getAuthorLink(Member $member, $action = null)
+    {
+        return $this->getBlog()->getAuthorLink($member, $action);
     }
 }

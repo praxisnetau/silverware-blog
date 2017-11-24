@@ -18,9 +18,12 @@
 namespace SilverWare\Blog\Pages;
 
 use SilverStripe\Forms\DatetimeField;
+use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Extensions\Model\DetailFieldsExtension;
 use SilverWare\Forms\TagField;
+use SilverWare\Select2\Forms\Select2Field;
 use Page;
 
 /**
@@ -99,7 +102,8 @@ class BlogPost extends Page
      * @config
      */
     private static $many_many = [
-        'Tags' => BlogTag::class
+        'Tags' => BlogTag::class,
+        'Authors' => Member::class
     ];
     
     /**
@@ -120,6 +124,7 @@ class BlogPost extends Page
      */
     private static $casting = [
         'TagsHTML' => 'HTMLFragment',
+        'AuthorsHTML' => 'HTMLFragment',
         'CategoryLink' => 'HTMLFragment'
     ];
     
@@ -173,6 +178,11 @@ class BlogPost extends Page
             'icon' => 'tag',
             'text' => '$TagsHTML',
             'show' => 'ShowTagsInList'
+        ],
+        'authors' => [
+            'icon' => 'user-circle',
+            'text' => '$AuthorsHTML',
+            'show' => 'ShowAuthorsInList'
         ]
     ];
     
@@ -192,6 +202,12 @@ class BlogPost extends Page
             'name' => 'Category',
             'icon' => 'folder-o',
             'text' => '$CategoryLink'
+        ],
+        'authors' => [
+            'name' => 'Authors',
+            'icon' => 'user-circle',
+            'text' => '$AuthorsHTML',
+            'show' => 'ShowAuthors'
         ]
     ];
     
@@ -220,6 +236,14 @@ class BlogPost extends Page
     private static $detail_fields_hide_names = true;
     
     /**
+     * Code of the security group to use for authors.
+     *
+     * @var string
+     * @config
+     */
+    private static $author_group;
+    
+    /**
      * Answers a list of field objects for the CMS interface.
      *
      * @return FieldList
@@ -243,7 +267,12 @@ class BlogPost extends Page
                     'Tags',
                     $this->fieldLabel('Tags'),
                     BlogTag::get()
-                )
+                ),
+                Select2Field::create(
+                    'Authors',
+                    $this->fieldLabel('Authors'),
+                    $this->getAuthorOptions()
+                )->setMultiple(true)
             ],
             'Content'
         );
@@ -344,6 +373,22 @@ class BlogPost extends Page
     }
     
     /**
+     * Answers a string of HTML containing the authors for the blog post.
+     *
+     * @return string
+     */
+    public function getAuthorsHTML()
+    {
+        $output = [];
+        
+        foreach ($this->Authors() as $author) {
+            $output[] = sprintf('<a class="author" href="%s">%s</a>', $author->AuthorLink, $author->Name);
+        }
+        
+        return implode(', ', $output);
+    }
+    
+    /**
      * Answers true if the category is to be shown in the list.
      *
      * @return boolean
@@ -364,6 +409,26 @@ class BlogPost extends Page
     }
     
     /**
+     * Answers true if the authors are to be shown in the list.
+     *
+     * @return boolean
+     */
+    public function getShowAuthorsInList()
+    {
+        return ($this->getBlog()->ShowAuthorsInList && !$this->getBlog()->HideAuthors);
+    }
+    
+    /**
+     * Answers true if the authors are to be shown in the post.
+     *
+     * @return boolean
+     */
+    public function getShowAuthors()
+    {
+        return !$this->getBlog()->HideAuthors;
+    }
+    
+    /**
      * Answers the parent blog of the receiver.
      *
      * @return Blog
@@ -371,5 +436,40 @@ class BlogPost extends Page
     public function getBlog()
     {
         return $this->getCategory()->getParent();
+    }
+    
+    /**
+     * Answers the security group used for blog authors.
+     *
+     * @return Group
+     */
+    public function getAuthorGroup()
+    {
+        if ($group = $this->config()->author_group) {
+            return Group::get()->find('Code', $group);
+        }
+    }
+    
+    /**
+     * Answers a map of options for the authors field.
+     *
+     * @return Map
+     */
+    public function getAuthorOptions()
+    {
+        return ($group = $this->getAuthorGroup()) ? $group->Members()->map() : Member::get()->map();
+    }
+    
+    /**
+     * Answers a link for the given author.
+     *
+     * @param Member $member
+     * @param string $author
+     *
+     * @return string
+     */
+    public function getAuthorLink(Member $member, $action = null)
+    {
+        return $this->getBlog()->getAuthorLink($member, $action);
     }
 }
