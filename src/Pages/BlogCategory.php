@@ -71,6 +71,14 @@ class BlogCategory extends Page implements ListSource, TagSource
     private static $icon = 'silverware/blog: admin/client/dist/images/icons/BlogCategory.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_BlogCategory';
+    
+    /**
      * Defines the default child class for this object.
      *
      * @var string

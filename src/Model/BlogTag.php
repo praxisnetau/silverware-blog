@@ -48,6 +48,14 @@ class BlogTag extends Tag
     private static $plural_name = 'Blog Tags';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_BlogTag';
+    
+    /**
      * Defines the reciprocal many-many associations for this object.
      *
      * @var array

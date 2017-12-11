@@ -70,6 +70,14 @@ class BlogPost extends Page
     private static $icon = 'silverware/blog: admin/client/dist/images/icons/BlogPost.png';
     
     /**
+     * Defines the table name to use for this object.
+     *
+     * @var string
+     * @config
+     */
+    private static $table_name = 'SilverWare_BlogPost';
+    
+    /**
      * Defines the default sort field and order for this object.
      *
      * @var string
