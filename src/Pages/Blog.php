@@ -108,6 +108,7 @@ class Blog extends Page implements ListSource, TagSource
         'ShowAuthorsInList' => 'Boolean',
         'ShowTagsInList' => 'Boolean',
         'HideAuthors' => 'Boolean',
+        'DateFormat' => 'Varchar(32)',
         'FeedTitle' => 'Varchar(255)',
         'FeedDescription' => 'Varchar(255)',
         'FeedNumberOfPosts' => 'Int',
@@ -181,6 +182,10 @@ class Blog extends Page implements ListSource, TagSource
                     'PostOptions',
                     $this->fieldLabel('PostOptions'),
                     [
+                        TextField::create(
+                            'DateFormat',
+                            $this->fieldLabel('DateFormat')
+                        ),
                         CheckboxField::create(
                             'ShowCategoryInList',
                             $this->fieldLabel('ShowCategoryInList')
@@ -256,6 +261,7 @@ class Blog extends Page implements ListSource, TagSource
         $labels['ShowAuthorsInList'] = _t(__CLASS__ . '.SHOWAUTHORSINLIST', 'Show authors in list');
         $labels['ShowTagsInList'] = _t(__CLASS__ . '.SHOWTAGSINLIST', 'Show tags in list');
         $labels['HideAuthors'] = _t(__CLASS__ . '.HIDEAUTHORS', 'Hide authors');
+        $labels['DateFormat'] = _t(__CLASS__ . '.DATEFORMAT', 'Date format');
         
         // Answer Field Labels:
         
