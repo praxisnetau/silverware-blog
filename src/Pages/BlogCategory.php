@@ -178,4 +178,14 @@ class BlogCategory extends Page implements ListSource, TagSource
     {
         return $this->getBlog()->getAuthorLink($member, $action);
     }
+    
+    /**
+     * Answers the date format defined for the blog.
+     *
+     * @return string
+     */
+    public function getDateFormat()
+    {
+        return $this->getBlog()->DateFormat;
+    }
 }

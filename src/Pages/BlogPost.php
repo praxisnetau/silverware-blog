@@ -480,4 +480,18 @@ class BlogPost extends Page
     {
         return $this->getBlog()->getAuthorLink($member, $action);
     }
+    
+    /**
+     * Answers the format for the date of the post.
+     *
+     * @return string
+     */
+    public function getMetaDateFormat()
+    {
+        if ($format = $this->getCategory()->DateFormat) {
+            return $format;
+        }
+        
+        return parent::getMetaDateFormat();
+    }
 }
