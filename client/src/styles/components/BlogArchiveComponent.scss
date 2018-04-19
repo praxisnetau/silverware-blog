@@ -1,0 +1,76 @@
+/* Blog Archive Component
+===================================================================================================================== */
+
+.blogarchivecomponent {
+  
+  ul {
+    
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    
+    a {
+      
+      color: inherit;
+      display: block;
+      
+      span.total {
+        color: $gray-600;
+      }
+      
+      &.year {
+        position: relative;
+        padding: $spacer-quarter 0;
+        border-bottom: 1px dotted $gray-400;
+      }
+      
+      @include hover-focus {
+        text-decoration: none;
+      }
+      
+    }
+    
+    &.months {
+      padding: $spacer-half 0 $spacer-half $spacer;
+    }
+    
+  }
+  
+  &.can-collapse {
+    
+    ul {
+      
+      a {
+        
+        &.year {
+          
+          &:after {
+            right: 0;
+            padding-right: $spacer-half;
+            color: $gray-600;
+            position: absolute;
+            font-family: 'FontAwesome';
+            content: "\f067"; // plus
+          }
+          
+          &.opened:after {
+            content: "\f068"; // minus
+          }
+          
+        }
+        
+      }
+      
+      &.months {
+        display: none;
+      }
+      
+      a.year.opened + ul.months {
+        display: block;
+      }
+      
+    }
+    
+  }
+  
+}

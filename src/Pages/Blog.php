@@ -22,6 +22,8 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\Queries\SQLSelect;
 use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Extensions\Lists\ListViewExtension;
@@ -343,5 +345,38 @@ class Blog extends Page implements ListSource, TagSource
     public function getAuthorLink(Member $member, $action = null)
     {
         return $this->Link(Controller::join_links('author', $member->URLSegment, $action));
+    }
+    
+    /**
+     * Answers an archive link for the given year and optional month.
+     *
+     * @param string|integer $year
+     * @param string|integer $month
+     *
+     * @return string
+     */
+    public function getArchiveLink($year, $month = null)
+    {
+        $y = (integer) $year;
+        $m = (integer) $month;
+        
+        return $this->Link(Controller::join_links('archive', $y, ($m ? sprintf('%02d', $m) : null)));
+    }
+    
+    /**
+     * Answers an array of valid years for posts within the blog.
+     *
+     * @return array
+     */
+    public function getValidYears()
+    {
+        $schema = DataObject::getSchema();
+        
+        $query = SQLSelect::create();
+        
+        $query->setSelect(['Year' => 'DISTINCT YEAR("Date")']);
+        $query->setFrom($schema->tableName(BlogPost::class));
+        
+        return $query->execute()->column('Year');
     }
 }

@@ -19,6 +19,7 @@ namespace SilverWare\Blog\Pages;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\RSS\RSSFeed;
+use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
 use PageController;
@@ -41,6 +42,7 @@ class BlogController extends PageController
      * @config
      */
     private static $url_handlers = [
+        'archive/$Year/$Month' => 'archive',
         'author/$Author!' => 'author',
         'tag/$Tag!' => 'tag',
         '$Post' => 'index'
@@ -55,7 +57,8 @@ class BlogController extends PageController
     private static $allowed_actions = [
         'rss',
         'tag',
-        'author'
+        'author',
+        'archive'
     ];
     
     /**
@@ -63,7 +66,7 @@ class BlogController extends PageController
      *
      * @param HTTPRequest $request
      *
-     * @return DBHTMLText|HTTPResponse
+     * @return HTTPResponse|DBHTMLText|array
      */
     public function index(HTTPRequest $request)
     {
@@ -83,7 +86,7 @@ class BlogController extends PageController
      *
      * @param HTTPRequest $request
      *
-     * @return DBHTMLText
+     * @return HTTPResponse|DBHTMLText|array
      */
     public function rss(HTTPRequest $request)
     {
@@ -108,11 +111,85 @@ class BlogController extends PageController
     }
     
     /**
+     * Renders a list of the blog posts for the requested year and optional month.
+     *
+     * @param HTTPRequest $request
+     *
+     * @return HTTPResponse|DBHTMLText|array
+     */
+    public function archive(HTTPRequest $request)
+    {
+        // Obtain Year Param:
+        
+        if ($year = $request->param('Year')) {
+            
+            // Convert Year to Integer:
+            
+            $year = (integer) $year;
+            
+            // Check Year Value:
+            
+            if ($year && in_array($year, $this->data()->getValidYears())) {
+                
+                // Obtain Month Param (optional):
+                
+                $month = (integer) $request->param('Month');
+                
+                // Check Month Value:
+                
+                if ($month && !in_array($month, range(1, 12))) {
+                    return $this->httpError(404);
+                }
+                
+                // Define Date Value:
+                
+                $dateMessage = $year;
+                
+                if ($month) {
+                    $date = DBDate::create()->setValue(strtotime(sprintf('%d-%02d', $year, $month)));
+                    $dateMessage = $date->format('LLLL y');
+                }
+                
+                // Define Filter Message:
+                
+                $message = sprintf(
+                    _t(__CLASS__ . '.SHOWINGPOSTSFORDATE', 'Showing posts for %s'),
+                    $dateMessage
+                );
+                
+                // Filter Posts by Year:
+                
+                $this->data()->addListWhere(['YEAR("Date")' => $year]);
+                
+                // Filter Posts by Month:
+                
+                if ($month) {
+                    $this->data()->addListWhere(['MONTH("Date")' => $month]);
+                }
+                
+                // Add Filter Alert to List:
+                
+                $this->data()->addListAlert($message);
+                
+                // Answer Template Data:
+                
+                return [];
+                
+            }
+            
+        }
+        
+        // Answer 404 Not Found:
+        
+        return $this->httpError(404);
+    }
+    
+    /**
      * Renders a list of the blog posts matching the requested author.
      *
      * @param HTTPRequest $request
      *
-     * @return DBHTMLText
+     * @return HTTPResponse|DBHTMLText|array
      */
     public function author(HTTPRequest $request)
     {
@@ -126,7 +203,7 @@ class BlogController extends PageController
                 
                 // Filter Posts by Author Post IDs:
                 
-                $this->data()->addListFilter(['ID' => $author->BlogPosts()->column('ID')]);
+                $this->data()->addListFilter(['ID' => ($author->BlogPosts()->column('ID') ?: null)]);
                 
                 // Add Filter Alert to List:
                 
@@ -150,7 +227,7 @@ class BlogController extends PageController
      *
      * @param HTTPRequest $request
      *
-     * @return DBHTMLText
+     * @return HTTPResponse|DBHTMLText|array
      */
     public function tag(HTTPRequest $request)
     {
