@@ -22,6 +22,7 @@ use SilverStripe\Control\RSS\RSSFeed;
 use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverWare\Blog\Model\BlogTag;
+use SilverWare\Crumbs\Breadcrumb;
 use PageController;
 
 /**
@@ -141,14 +142,9 @@ class BlogController extends PageController
                     return $this->httpError(404);
                 }
                 
-                // Define Date Value:
+                // Define Date Message:
                 
-                $dateMessage = $year;
-                
-                if ($month) {
-                    $date = DBDate::create()->setValue(strtotime(sprintf('%d-%02d', $year, $month)));
-                    $dateMessage = $date->format('LLLL y');
-                }
+                $dateMessage = $month ? $this->getFormattedMonthAndYear($month, $year) : $year;
                 
                 // Define Filter Message:
                 
@@ -193,27 +189,21 @@ class BlogController extends PageController
      */
     public function author(HTTPRequest $request)
     {
-        // Obtain Author Segment:
+        // Obtain Author Object:
         
-        if ($segment = $request->param('Author')) {
+        if ($author = $this->getCurrentAuthor()) {
             
-            // Obtain Tag Object:
+            // Filter Posts by Author Post IDs:
             
-            if ($author = Member::get()->find('URLSegment', $segment)) {
-                
-                // Filter Posts by Author Post IDs:
-                
-                $this->data()->addListFilter(['ID' => ($author->BlogPosts()->column('ID') ?: null)]);
-                
-                // Add Filter Alert to List:
-                
-                $this->data()->addListAlert(
-                    sprintf(_t(__CLASS__ . '.SHOWINGPOSTSBYAUTHOR', 'Showing posts by author "%s"'), $author->Name)
-                );
-                
-                return [];
-                
-            }
+            $this->data()->addListFilter(['ID' => ($author->BlogPosts()->column('ID') ?: null)]);
+            
+            // Add Filter Alert to List:
+            
+            $this->data()->addListAlert(
+                sprintf(_t(__CLASS__ . '.SHOWINGPOSTSBYAUTHOR', 'Showing posts by author "%s"'), $author->Name)
+            );
+            
+            return [];
             
         }
         
@@ -231,27 +221,21 @@ class BlogController extends PageController
      */
     public function tag(HTTPRequest $request)
     {
-        // Obtain Tag Segment:
+        // Obtain Tag Object:
         
-        if ($segment = $request->param('Tag')) {
+        if ($tag = $this->getCurrentTag()) {
             
-            // Obtain Tag Object:
+            // Filter Posts by Tagged Post IDs:
             
-            if ($tag = BlogTag::get()->find('URLSegment', $segment)) {
-                
-                // Filter Posts by Tagged Post IDs:
-                
-                $this->data()->addListFilter(['ID' => $tag->Posts()->column('ID')]);
-                
-                // Add Filter Alert to List:
-                
-                $this->data()->addListAlert(
-                    sprintf(_t(__CLASS__ . '.SHOWINGPOSTSTAGGEDWITH', 'Showing posts tagged with "%s"'), $tag->Title)
-                );
-                
-                return [];
-                
-            }
+            $this->data()->addListFilter(['ID' => $tag->Posts()->column('ID')]);
+            
+            // Add Filter Alert to List:
+            
+            $this->data()->addListAlert(
+                sprintf(_t(__CLASS__ . '.SHOWINGPOSTSTAGGEDWITH', 'Showing posts tagged with "%s"'), $tag->Title)
+            );
+            
+            return [];
             
         }
         
@@ -271,6 +255,110 @@ class BlogController extends PageController
     }
     
     /**
+     * Answers the author associated with the current request.
+     *
+     * @return Member
+     */
+    public function getCurrentAuthor()
+    {
+        if ($segment = $this->getRequest()->param('Author')) {
+            return Member::get()->find('URLSegment', $segment);
+        }
+    }
+    
+    /**
+     * Answers the blog tag associated with the current request.
+     *
+     * @return BlogTag
+     */
+    public function getCurrentTag()
+    {
+        if ($segment = $this->getRequest()->param('Tag')) {
+            return BlogTag::get()->find('URLSegment', $segment);
+        }
+    }
+    
+    /**
+     * Answers a list of extra breadcrumb items for the template.
+     *
+     * @return ArrayList
+     */
+    public function getExtraBreadcrumbItems()
+    {
+        $items = parent::getExtraBreadcrumbItems();
+        
+        if ($crumb = $this->getExtraBreadcrumb()) {
+            $items->push($crumb);
+        }
+        
+        return $items;
+    }
+    
+    /**
+     * Answers an extra breadcrumb object for the current request.
+     *
+     * @return Breadcrumb
+     */
+    public function getExtraBreadcrumb()
+    {
+        // Answer Tag Breadcrumb:
+        
+        if ($tag = $this->getCurrentTag()) {
+            
+            return Breadcrumb::create(
+                $tag->Link,
+                sprintf(
+                    _t(
+                        __CLASS__ . '.POSTSTAGGEDWITH',
+                        'Posts tagged with "%s"'
+                    ),
+                    $tag->Title
+                )
+            );
+            
+        }
+        
+        // Answer Author Breadcrumb:
+        
+        if ($author = $this->getCurrentAuthor()) {
+            
+            return Breadcrumb::create(
+                $this->data()->getAuthorLink($author),
+                sprintf(
+                    _t(
+                        __CLASS__ . '.POSTSBYAUTHOR',
+                        'Posts by author "%s"'
+                    ),
+                    $author->Name
+                )
+            );
+            
+        }
+        
+        // Answer Archive Breadcrumb:
+        
+        if ($year = $this->getRequest()->param('Year')) {
+            
+            $year  = (integer) $year;
+            $month = (integer) $this->getRequest()->param('Month');
+            
+            $label = $month ? $this->getFormattedMonthAndYear($month, $year) : $year;
+            
+            return Breadcrumb::create(
+                $this->data()->getArchiveLink($year, $month),
+                sprintf(
+                    _t(
+                        __CLASS__ . '.POSTSFOR',
+                        'Posts for %s'
+                    ),
+                    $label
+                )
+            );
+            
+        }
+    }
+    
+    /**
      * Performs initialisation before any action is called on the receiver.
      *
      * @return void
@@ -286,5 +374,18 @@ class BlogController extends PageController
         if ($this->FeedEnabled) {
             RSSFeed::linkToFeed($this->Link('rss'), $this->FeedTitle);
         }
+    }
+    
+    /**
+     * Answers a formatted string for the given month and year.
+     *
+     * @param integer $month
+     * @param integer $year
+     *
+     * @return string
+     */
+    protected function getFormattedMonthAndYear($month, $year)
+    {
+        return DBDate::create()->setValue(strtotime(sprintf('%d-%02d', $year, $month)))->format('LLLL y');
     }
 }
