@@ -20,6 +20,7 @@ namespace SilverWare\Blog\Pages;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverWare\Blog\Model\BlogTag;
 use SilverWare\Extensions\Model\DetailFieldsExtension;
 use SilverWare\Forms\TagField;
@@ -328,6 +329,12 @@ class BlogPost extends Page
         // Populate Defaults:
         
         $this->Date = date('Y-m-d H:i:s');
+        
+        // Add Current Member as Author:
+        
+        if ($member = Security::getCurrentUser()) {
+            $this->Authors()->add($member);
+        }
     }
     
     /**
