@@ -255,6 +255,12 @@ class BlogArchiveComponent extends BaseComponent
             
             $categoryIds = $blog->AllChildren()->column('ID');
             
+            // Answer Early (if no categories):
+            
+            if (!$categoryIds) {
+                return $archive;
+            }
+            
             // Obtain Data Object Schema:
             
             $schema = DataObject::getSchema();
@@ -393,5 +399,19 @@ class BlogArchiveComponent extends BaseComponent
     public function getNoDataMessage()
     {
         return _t(__CLASS__ . '.NODATAAVAILABLE', 'No data available.');
+    }
+    
+    /**
+     * Answers true if the object is disabled within the template.
+     *
+     * @return boolean
+     */
+    public function isDisabled()
+    {
+        if (!$this->getArchive()->exists()) {
+            return true;
+        }
+        
+        return parent::isDisabled();
     }
 }
