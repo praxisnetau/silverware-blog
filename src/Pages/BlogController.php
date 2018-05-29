@@ -227,7 +227,7 @@ class BlogController extends PageController
             
             // Filter Posts by Tagged Post IDs:
             
-            $this->data()->addListFilter(['ID' => $tag->Posts()->column('ID')]);
+            $this->data()->addListFilter(['ID' => $tag->Posts()->column('ID') ?: null]);
             
             // Add Filter Alert to List:
             
